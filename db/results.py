@@ -15,5 +15,11 @@ def post_data(params, data):
                   'params': params}
         # print(result)
         all_results.append(result)
+
+
     # results.insert_many(all_results)
+    # results.create_index({"user_id": 1}, {'unique': True})
+
     print(list(results.find()))
+
+
