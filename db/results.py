@@ -1,3 +1,4 @@
+import pymongo
 from pymongo import MongoClient
 import psycopg2 as pg
 
@@ -18,7 +19,8 @@ def post_data(params, data):
 
 
     # results.insert_many(all_results)
-    # results.create_index({"user_id": 1}, {'unique': True})
+    results.create_index([('user_id', pymongo.ASCENDING)], unique=True)
+
 
     print(list(results.find()))
 
