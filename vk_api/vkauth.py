@@ -15,7 +15,12 @@ class VkAuth:
         driver = self.driver
         driver.get(get_token())
         time.sleep(30)
-        self.catch_token(self.driver.current_url)
+        try:
+            if self.catch_token(self.driver.current_url) == 1:
+                return 'Авторизация прошла успешна'
+
+        except AttributeError:
+            self.auth()
 
     def catch_token(self, path):
         token_pattern = re.compile('token=([0-9]|[A-Za-z])+')
@@ -23,6 +28,7 @@ class VkAuth:
         self.token = re.sub(r'token=', '', token.group(0))
         with open('token.txt', 'w', encoding='utf8') as f:
             f.write(self.token)
+        return 1
 
     def tearDown(self) -> None:
         self.driver.close()
