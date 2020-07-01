@@ -41,6 +41,8 @@ class VkSearcher(VkUser):
         # print(len(self.json_))
         self.json_.reverse()
         for usr in self.json_:
+            if self.get_info(usr['id'])['is_closed']:
+                continue
             if len(top10_results) >= 10:
                 break
             else:
@@ -82,6 +84,7 @@ class VkSearcher(VkUser):
             json_ = self.get_response(self.METHOD_PHOTOS_GET, {'owner_id': usr['id'],
                                                                'album_id': 'profile',
                                                                'extended': 1})
+
             new_list = sorted(json_['response']['items'], key=lambda x: x['likes']['count'])
             new_list.reverse()
             new_list = new_list[0:3]
