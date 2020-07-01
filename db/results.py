@@ -18,8 +18,9 @@ def post_data(params, data):
         all_results.append(result)
 
 
-    # results.insert_many(all_results)
-    results.create_index([('user_id', pymongo.ASCENDING)], unique=True)
+    results.insert_many(all_results)
+    # results.create_index([('user_id', pymongo.ASCENDING)], unique=True)
+    # print(results.index_information())
 
 
     print(list(results.find()))
