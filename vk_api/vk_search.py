@@ -8,9 +8,9 @@ from db import results
 class VkSearcher(VkUser):
     def __init__(self, user_id=None, age=[18, 22], gender='W'):
         super().__init__(user_id)
-        if gender == 'W':
+        if gender.upper() == 'W':
             sex = 1
-        elif gender == 'M':
+        elif gender.upper() == 'M':
             sex = 2
         else:
             print('Пол введен неверно')
@@ -113,14 +113,21 @@ class VkSearcher(VkUser):
         return results_json
         # print(json_['response']['items'])
 
+
 def get_params_for_search():
     age = input('Введите диапазон возраста через - ').split('-')
+    if age[0] > age[1]:
+        print('Диапазон возраста введен неверно')
+        sys.exit(0)
     gender = input('Введите пол - ')
+    if gender.lower() != 'w' or gender.lower() != 'm':
+        print('Пол введен неверно')
+        sys.exit(0)
     searcher = VkSearcher(age=age, gender=gender)
     return age, gender, searcher
 
-def runner(without_enter=False):
 
+def runner():
     age, gender, searcher = get_params_for_search()
     data = searcher.search()
     params = [searcher.user_info['id'], age, gender]
