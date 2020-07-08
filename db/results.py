@@ -31,3 +31,26 @@ def post_data(params, data, searcher):
     # print(results.index_information())
 
     print(list(results.find()))
+
+
+def add_favourite(user_id):
+    results = vkinder_results_db['results_vkinder']
+    favourites = vkinder_results_db['favourites_vkinder']
+    if len(list(results.find({'user_id': 'vk.com/id' + str(user_id)}))) == 0:
+        print('Такого пользователя нету в бд')
+        return
+    if len(list(favourites.find({'user_id': user_id}))) != 0:
+        print('Такой пользователь уже есть в избранных')
+        return
+    else:
+        favourites.insert({'user_id': user_id})
+        print(list(favourites.find()))
+
+
+def del_from_favourite(user_id):
+    favourites = vkinder_results_db['favourites_vkinder']
+    if len(list(favourites.find({'user_id': user_id}))) != 0:
+        favourites.remove({'user_id': user_id})
+        print('Пользователь успешно удален из избранных')
+    else:
+        print('Пользователя нету в бд')
