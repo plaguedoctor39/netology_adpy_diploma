@@ -14,13 +14,18 @@ class VkAuth:
     def auth(self):
         driver = self.driver
         driver.get(get_token())
-        time.sleep(30)
-        try:
-            if self.catch_token(self.driver.current_url) == 1:
-                return 'Авторизация прошла успешна'
+        # time.sleep(30)
+        token_value = 0
+        while get_token != 1:
+            time.sleep(10)
+            try:
+                if self.catch_token(self.driver.current_url) == 1:
+                    print('Авторизация прошла успешно')
+                    return
 
-        except AttributeError:
-            self.auth()
+            except AttributeError:
+                continue
+
 
     def catch_token(self, path):
         token_pattern = re.compile('token=([0-9]|[A-Za-z])+')
