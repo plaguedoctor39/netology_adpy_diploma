@@ -69,7 +69,7 @@ class VkSearcher(VkUser):
         return json_list
 
     def sort_searcher(self):
-
+        # TODO: Улучшить алгоритм поиска с помощью анализа текста
         self.json_.sort(key=lambda x: x['common_count'])
         # print(len(self.json_))
         try:
@@ -128,6 +128,7 @@ def get_params_for_search():
     searcher = VkSearcher(age=age, gender=gender)
     return age, gender, searcher
 
+# TODO: Добавить возможность ставить и убирать лайки на фотографии
 
 def runner():
     age, gender, searcher = get_params_for_search()
