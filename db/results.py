@@ -76,3 +76,10 @@ def del_from_blacklist(user_id):
         print('Пользователь успешно удален из черного списка')
     else:
         print('Пользователя нету в бд')
+
+def check_blacklist(user_id):
+    blacklist = vkinder_results_db['blacklist_vkinder']
+    if len(list(blacklist.find({'user_id': user_id}))) != 0:
+        return 1
+    else:
+        return 0

@@ -40,6 +40,8 @@ class VkSearcher(VkUser):
         for usr in self.json_:
             if self.get_info(usr['id'])['is_closed']:
                 continue
+            if results.check_blacklist(usr['id']) == 1:
+                continue
             if len(top10_results) >= 10:
                 break
             else:
