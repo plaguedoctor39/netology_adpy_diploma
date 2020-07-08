@@ -54,3 +54,25 @@ def del_from_favourite(user_id):
         print('Пользователь успешно удален из избранных')
     else:
         print('Пользователя нету в бд')
+
+
+def add_in_blacklist(user_id):
+    results = vkinder_results_db['results_vkinder']
+    blacklist = vkinder_results_db['blacklist_vkinder']
+    if len(list(results.find({'user_id': 'vk.com/id' + str(user_id)}))) == 0:
+        print('Такого пользователя нету в бд')
+        return
+    if len(list(blacklist.find({'user_id': user_id}))) == 0:
+        blacklist.insert({'user_id': user_id})
+        print('Пользователь успешно добавлен в черный список')
+    else:
+        print('Пользователь уже есть в черном списке')
+
+
+def del_from_blacklist(user_id):
+    blacklist = vkinder_results_db['blacklist_vkinder']
+    if len(list(blacklist.find({'user_id': user_id}))) != 0:
+        blacklist.remove({'user_id': user_id})
+        print('Пользователь успешно удален из черного списка')
+    else:
+        print('Пользователя нету в бд')
