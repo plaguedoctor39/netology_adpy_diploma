@@ -1,4 +1,4 @@
-from vk_api import constants, vkauth
+from vk_api import constants, vkauth, vk_search
 import sys
 import json
 import requests
@@ -16,7 +16,7 @@ class VkApi:
     METHOD_USERS_SEARCH = 'users.search'
     METHOD_PHOTOS_GET = 'photos.get'
 
-    def __init__(self, user_id = None):
+    def __init__(self, user_id=None):
         self.PARAMS = {
             'access_token': self.TOKEN,
             'v': self.API_VERSION_VK
@@ -36,9 +36,10 @@ class VkApi:
         json_ = response.json()
         # print(json_)
         try:
-           if json_['error']['error_code'] == 5:
-               session = vkauth.VkAuth()
-               session.auth()
+            if json_['error']['error_code'] == 5:
+                session = vkauth.VkAuth()
+                session.auth()
+                vk_search.runner()
 
         except KeyError:
             pass
@@ -48,7 +49,7 @@ class VkApi:
 
 class VkUser(VkApi):
 
-    def __init__(self, user_id = None):
+    def __init__(self, user_id=None):
         super().__init__(user_id)
 
         self.user_info = self.get_info(user_id)
@@ -62,10 +63,10 @@ class VkUser(VkApi):
 
     def get_info(self, user_id=None):
         user_info = self.get_response(self.METHOD_USERS_GET, {'fields': 'about, activities, books, city, '
-                                                                    'interests, movies, music, personal, '
-                                                                    'sex',
-                                                          'user_ids': user_id})
-        print('~ get user info')
+                                                                        'interests, movies, music, personal, '
+                                                                        'sex',
+                                                              'user_ids': user_id})
+        print('~ получаем информацию о пользователе')
         try:
             # Проверяем правильность введенного id
             if 'deactivated' in user_info['response'][0]:
@@ -76,4 +77,3 @@ class VkUser(VkApi):
             print(f'Пользователя с id {user_id} нету')
             sys.exit()
         return user_info['response'][0]
-
