@@ -26,20 +26,17 @@ class VkSearcher(VkUser):
                                         'interests, movies, music, personal',
                               'user_id': self.user_info['id']}
 
-    def search(self):
+    def search(self, next10=False):
+        if next10:
+            return self.get_top10()
+        else:
+            self.json_ = self.get_response(self.METHOD_USERS_SEARCH, self.search_params)['response']['items']
+            self.sort_searcher()
+            return self.get_top10()
+        # print(self.json_)
+
+    def get_top10(self):
         top10_results = []
-        self.json_ = self.get_response(self.METHOD_USERS_SEARCH, self.search_params)['response']['items']
-        self.json_.sort(key=lambda x: x['common_count'])
-        # print(len(self.json_))
-        try:
-            if self.user_info['personal']['smoking'] == 1 or self.user_info['personal']['smoking'] == 2:
-                self.del_from_search_list('smoking')
-            if self.user_info['personal']['alcohol'] == 1 or self.user_info['personal']['alcohol'] == 2:
-                self.del_from_search_list('alcohol')
-        except KeyError:
-            pass
-        # print(len(self.json_))
-        self.json_.reverse()
         for usr in self.json_:
             if self.get_info(usr['id'])['is_closed']:
                 continue
@@ -65,21 +62,41 @@ class VkSearcher(VkUser):
                     continue
         # print(top10_results)
         json_list = self.get_photos(top10_results)
-
+        self.del_from_search_list(drop=True)
         file_writer(json_list)
         return json_list
 
-    def del_from_search_list(self, key):
-        for page in self.json_:
-            # print(page)
-            try:
-                if page['personal'][key] == 5:
-                    self.json_.remove(page)
-            except KeyError:
-                continue
+    def sort_searcher(self):
+
+        self.json_.sort(key=lambda x: x['common_count'])
+        # print(len(self.json_))
+        try:
+            if self.user_info['personal']['smoking'] == 1 or self.user_info['personal']['smoking'] == 2:
+                self.del_from_search_list('smoking')
+            if self.user_info['personal']['alcohol'] == 1 or self.user_info['personal']['alcohol'] == 2:
+                self.del_from_search_list('alcohol')
+        except KeyError:
+            pass
+        # print(len(self.json_))
+        self.json_.reverse()
+
+    def del_from_search_list(self, key=None, drop=False):
+        if drop:
+            print('удаление уже известной десятки пользователей')
+            for i in range(10):
+                self.json_.pop(i)
+        else:
+            for page in self.json_:
+                # print(page)
+                try:
+                    if page['personal'][key] == 5:
+                        self.json_.remove(page)
+                except KeyError:
+                    continue
 
     def get_photos(self, user_list):
         results_json = []
+        print('~ получаем фотографии')
         for usr in user_list:
             json_ = self.get_response(self.METHOD_PHOTOS_GET, {'owner_id': usr['id'],
                                                                'album_id': 'profile',
@@ -96,12 +113,15 @@ class VkSearcher(VkUser):
         return results_json
         # print(json_['response']['items'])
 
-
-def runner():
-    # user_id = input('Введите id пользователя - ')
+def get_params_for_search():
     age = input('Введите диапазон возраста через - ').split('-')
     gender = input('Введите пол - ')
     searcher = VkSearcher(age=age, gender=gender)
+    return age, gender, searcher
+
+def runner(without_enter=False):
+
+    age, gender, searcher = get_params_for_search()
     data = searcher.search()
     params = [searcher.user_info['id'], age, gender]
-    results.post_data(params, data)
+    results.post_data(params, data, searcher)
