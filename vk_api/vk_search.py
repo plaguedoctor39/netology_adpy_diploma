@@ -104,12 +104,12 @@ class VkSearcher(VkUser):
                                                                'album_id': 'profile',
                                                                'extended': 1})
 
-            new_list = sorted(json_['response']['items'], key=lambda x: x['likes']['count'])
-            new_list.reverse()
+            new_list = sorted(json_['response']['items'], key=lambda x: x['likes']['count'], reverse=True)
             new_list = new_list[0:3]
+            # print(new_list)
             photos = []
             for photo in new_list:
-                photos.append(photo['sizes'][-1]['url'])
+                photos.append({str(photo['id']): photo['sizes'][-1]['url']})
             results_json.append({'vk.com/id' + str(new_list[0]['owner_id']): photos})
 
         return results_json
@@ -121,17 +121,38 @@ def get_params_for_search():
     if age[0] > age[1]:
         print('Диапазон возраста введен неверно')
         sys.exit(0)
-    gender = input('Введите пол - ')
-    if gender.lower() != 'w' or gender.lower() != 'm':
-        print('Пол введен неверно')
-        sys.exit(0)
+    gender = input('Введите пол - ').upper()
     searcher = VkSearcher(age=age, gender=gender)
     return age, gender, searcher
+
 
 # TODO: Добавить возможность ставить и убирать лайки на фотографии
 
 def runner():
-    age, gender, searcher = get_params_for_search()
-    data = searcher.search()
-    params = [searcher.user_info['id'], age, gender]
-    results.post_data(params, data, searcher)
+    while True:
+        cmd = input('Введите команду - ').lower()
+        if cmd == 's' or cmd == 'search':
+            age, gender, searcher = get_params_for_search()
+            data = searcher.search()
+            params = [searcher.user_info['id'], age, gender]
+            results.post_data(params, data, searcher)
+        elif cmd == 'p' or cmd == 'print':
+            results.print_db()
+        elif cmd == 'sf' or cmd == 'show favourites':
+            results.show_favourites()
+        elif cmd == 'af' or cmd == 'add favourites':
+            user_id = input('Введите id пользователя - ')
+            results.add_favourite(user_id)
+        elif cmd == 'dff' or cmd == 'delete from favourites':
+            user_id = input('Введите id пользователя - ')
+            results.del_from_favourite(user_id)
+        elif cmd == 'sb' or cmd == 'show blacklist':
+            results.show_blacklist()
+        elif cmd == 'aib' or cmd == 'add in blacklist':
+            user_id = input('Введите id пользователя - ')
+            results.add_in_blacklist(user_id)
+        elif cmd == 'dfb' or cmd == 'delete from blacklist':
+            user_id = input('Введите id пользователя - ')
+            results.del_from_blacklist()
+        elif cmd == 'e' or cmd == 'end':
+            return
