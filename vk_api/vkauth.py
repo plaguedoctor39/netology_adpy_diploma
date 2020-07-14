@@ -43,7 +43,7 @@ def get_token():
     params = {
         'client_id': '7399598',
         'display': 'page',
-        'scope': 'friends, groups, offline',
+        'scope': 'friends, groups, offline, wall',
         'response_type': 'token',
         'v': '5.52'
     }

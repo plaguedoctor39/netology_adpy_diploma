@@ -15,6 +15,8 @@ class VkApi:
     METHOD_USERS_GET = 'users.get'
     METHOD_USERS_SEARCH = 'users.search'
     METHOD_PHOTOS_GET = 'photos.get'
+    METHOD_LIKES_ADD = 'likes.add'
+    METHOD_LIKES_DELETE = 'likes.delete'
 
     def __init__(self, user_id=None):
         self.PARAMS = {

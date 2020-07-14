@@ -33,9 +33,22 @@ def post_data(params, data, searcher):
     print_db()
 
 
+def remove_db():
+    results = vkinder_results_db['results_vkinder']
+    results.remove()
+    print('База данных очищена')
+
+
 def print_db():
     results = vkinder_results_db['results_vkinder']
-    print(list(results.find()))
+    db_table = list(results.find())
+    for row in db_table:
+        print(row)
+
+
+def find_one_db(user_id):
+    results = vkinder_results_db['results_vkinder']
+    print(list(results.find({'user_id': 'vk.com/id' + str(user_id)})))
 
 
 def add_favourite(user_id):

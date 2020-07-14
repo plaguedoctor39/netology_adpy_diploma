@@ -1,4 +1,4 @@
-from vk_api.vk_user import VkApi, VkUser
+from vk_api.vk_user import VkApi, VkUser, constants
 import pprint
 import sys
 from result_writer import file_writer
@@ -115,6 +115,34 @@ class VkSearcher(VkUser):
         return results_json
         # print(json_['response']['items'])
 
+    def likes_add(self):
+        owner_id = int(input('Введите id пользователя - '))
+        results.find_one_db(owner_id)
+        print('Выберите фотографию:')
+        item_id = int(input('Введите id фотографии - '))
+        params = {'type': 'photo',
+                  'owner_id': owner_id,
+                  'item_id': item_id
+                  }
+        result = self.get_response(self.METHOD_LIKES_ADD, params)
+        print(result)
+
+    def likes_delete(self):
+        owner_id = int(input('Введите id пользователя - '))
+        print('Выберите фотографию:')
+        results.find_one_db(owner_id)
+        item_id = int(input('Введите id фотографии - '))
+        params = {'type': 'photo',
+                  'owner_id': owner_id,
+                  'item_id': item_id
+                  }
+        result = self.get_response(self.METHOD_LIKES_DELETE, params)
+        try:
+            if result['error']:
+                print('Вашего лайка нету на этой фотографии')
+        except AttributeError:
+            print(result)
+
 
 def get_params_for_search():
     age = input('Введите диапазон возраста через - ').split('-')
@@ -126,8 +154,6 @@ def get_params_for_search():
     return age, gender, searcher
 
 
-# TODO: Добавить возможность ставить и убирать лайки на фотографии
-
 def runner():
     while True:
         cmd = input('Введите команду - ').lower()
@@ -136,6 +162,14 @@ def runner():
             data = searcher.search()
             params = [searcher.user_info['id'], age, gender]
             results.post_data(params, data, searcher)
+        elif cmd == 'al' or cmd == 'add like':
+            liker = VkSearcher()
+            liker.likes_add()
+        elif cmd == 'dl' or cmd == 'delete like':
+            liker = VkSearcher()
+            liker.likes_delete()
+        elif cmd == 'cl' or cmd == 'clear db':
+            results.remove_db()
         elif cmd == 'p' or cmd == 'print':
             results.print_db()
         elif cmd == 'sf' or cmd == 'show favourites':
