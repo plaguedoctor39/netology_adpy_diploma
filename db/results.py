@@ -30,6 +30,11 @@ def post_data(params, data, searcher):
     # results.create_index([('user_id', pymongo.ASCENDING)], unique=True)
     # print(results.index_information())
 
+    print_db()
+
+
+def print_db():
+    results = vkinder_results_db['results_vkinder']
     print(list(results.find()))
 
 
@@ -44,7 +49,7 @@ def add_favourite(user_id):
         return
     else:
         favourites.insert({'user_id': user_id})
-        print(list(favourites.find()))
+        show_favourites()
 
 
 def del_from_favourite(user_id):
@@ -54,6 +59,11 @@ def del_from_favourite(user_id):
         print('Пользователь успешно удален из избранных')
     else:
         print('Пользователя нету в бд')
+
+
+def show_favourites():
+    favourites = vkinder_results_db['favourites_vkinder']
+    print(list(favourites.find()))
 
 
 def add_in_blacklist(user_id):
@@ -76,6 +86,12 @@ def del_from_blacklist(user_id):
         print('Пользователь успешно удален из черного списка')
     else:
         print('Пользователя нету в бд')
+
+
+def show_blacklist():
+    blacklist = vkinder_results_db['blacklist_vkinder']
+    print(list(blacklist.find()))
+
 
 def check_blacklist(user_id):
     blacklist = vkinder_results_db['blacklist_vkinder']
