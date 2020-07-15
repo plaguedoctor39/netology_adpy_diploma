@@ -27,9 +27,11 @@ class VkSearcher(VkUser):
                               'user_id': self.user_info['id']}
 
     def search(self, next10=False):
-        if next10:
-            return self.get_top10()
-        else:
+        try:
+            if self.json_:
+                print('next')
+                return self.get_top10()
+        except AttributeError:
             self.json_ = self.get_response(self.METHOD_USERS_SEARCH, self.search_params)['response']['items']
             self.sort_searcher()
             return self.get_top10()
@@ -47,18 +49,28 @@ class VkSearcher(VkUser):
             else:
                 # print(usr)
                 if usr['common_count'] > 0:
+                    print('Общие друзья')
+                    top10_results.append(usr)
+                    continue
+                user_groups = []
+                for group in self.get_groups(usr['id']):
+                    user_groups.append(group['id'])
+                if len(list(set(user_groups) & set(self.user_info['groups']))) != 0:
+                    print('Общие группы')
                     top10_results.append(usr)
                     continue
                 try:
                     if usr['interests'] in self.user_info['interests'] or usr['music'] in self.user_info['music'] or \
                             usr['activities'] in self.user_info['activities']:
                         top10_results.append(usr)
+                        print('Общие интересы')
                         continue
                 except KeyError:
                     continue
                 try:
                     if usr['books'] in self.user_info['books'] or usr['movies'] in self.user_info['movies']:
                         top10_results.append(usr)
+                        print('Общие книги/фильмы')
                         continue
                 except KeyError:
                     continue
@@ -187,6 +199,6 @@ def runner():
             results.add_in_blacklist(user_id)
         elif cmd == 'dfb' or cmd == 'delete from blacklist':
             user_id = input('Введите id пользователя - ')
-            results.del_from_blacklist()
+            results.del_from_blacklist(user_id)
         elif cmd == 'e' or cmd == 'end':
             return
